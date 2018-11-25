@@ -33,7 +33,7 @@ class snips_fmadmin(object):
         self.start_blocking()
         
         
-    def getIntentName (self, intent_message)
+    def getIntentName (self, intent_message):
         intentName = intent_message.intent.intent_name
         intentName = intentName.split(":")[1]
         return intentName
