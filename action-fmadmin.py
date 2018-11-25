@@ -65,7 +65,7 @@ class snips_fmadmin(object):
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         #coming_intent = intent_message.intent.intent_name
-        coming_intent = getIntentName(intent_message)
+        coming_intent = self.getIntentName(intent_message)
         if coming_intent == 'connect_to_server':
             self.intent_1_callback(hermes, intent_message)
         if coming_intent == 'intent_2':
