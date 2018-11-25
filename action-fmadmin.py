@@ -32,6 +32,13 @@ class snips_fmadmin(object):
         # start listening to MQTT
         self.start_blocking()
         
+        
+    def getIntentName (self, intent_message)
+        intentName = intent_message.intent.intent_name
+        intentName = intentName.split(":")[1]
+        return intentName
+        
+        
     # --> Sub callback function, one per intent
     def intent_1_callback(self, hermes, intent_message):
         # terminate the session first if not continue
@@ -57,8 +64,9 @@ class snips_fmadmin(object):
 
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
-        coming_intent = intent_message.intent.intent_name
-        if coming_intent == 'intent_1':
+        #coming_intent = intent_message.intent.intent_name
+        coming_intent = getIntentName(intent_message)
+        if coming_intent == 'connect_to_server':
             self.intent_1_callback(hermes, intent_message)
         if coming_intent == 'intent_2':
             self.intent_2_callback(hermes, intent_message)
