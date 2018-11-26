@@ -28,6 +28,8 @@ class snips_fmadmin(object):
             self.config = SnipsConfigParser.read_configuration_file(CONFIG_INI)
         except :
             self.config = None
+                
+        fa = pyfmadmin (str(self.config["secret"]["hostname"]), str(self.config["secret"]["username"]), str(self.config["secret"]["password"]))
 
         # start listening to MQTT
         self.start_blocking()
@@ -40,17 +42,26 @@ class snips_fmadmin(object):
         
         
     # --> Sub callback function, one per intent
-    def intent_1_callback(self, hermes, intent_message):
-        # terminate the session first if not continue
-        hermes.publish_end_session(intent_message.session_id, "")
+    def connect_to_server(self, hermes, intent_message):
+
+        loginResponse = self.fa.login()
         
-        # action code goes here...
-        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        if loginResponse["result"] == 0:
+	        print ( "Login successful!" )
+	        #hermes.publish_start_session_notification(intent_message.site_id, "Connected to server", "")
+	        hermes.publish_end_session(intent_message.session_id, "Connected to server")
+        else:
+	        print ( "Login failed" )
+	        hermes.publish_end_session(intent_message.session_id, "Unable to connect to server")
+
 
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(intent_message.site_id, "Action1 has been done", "")
+        #hermes.publish_start_session_notification(intent_message.site_id, "Action1 has been done", "")
 
-    def intent_2_callback(self, hermes, intent_message):
+
+
+
+    def disconnect_from_server(self, hermes, intent_message):
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
 
@@ -62,14 +73,18 @@ class snips_fmadmin(object):
 
     # More callback function goes here...
 
+
+
+
+
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         #coming_intent = intent_message.intent.intent_name
         coming_intent = self.getIntentName(intent_message)
         if coming_intent == 'connect_to_server':
-            self.intent_1_callback(hermes, intent_message)
+            self.connect_to_server(hermes, intent_message)
         if coming_intent == 'intent_2':
-            self.intent_2_callback(hermes, intent_message)
+            self.disconnect_from_server(hermes, intent_message)
 
         # more callback and if condition goes here...
 
