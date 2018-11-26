@@ -9,8 +9,7 @@ from pyfmadmin import pyfmadmin
 
 CONFIG_INI = "config.ini"
 
-
-INTENT_DISCONNECT = "disconnect_from_server"
+INTENT_DISCONNECT = "multip:disconnect_from_server"
 
 INTENT_FILTER = [INTENT_DISCONNECT]
 
@@ -21,11 +20,10 @@ MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
 MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
+
+
 class snips_fmadmin(object):
-    """Class used to wrap action code with mqtt connection
-        
-        Please change the name refering to your application
-    """
+
 
     def __init__(self):
         # get the configuration if needed
