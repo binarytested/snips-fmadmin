@@ -10,7 +10,7 @@ from pyfmadmin import pyfmadmin
 CONFIG_INI = "config.ini"
 
 
-INTENT_DISCONNECT = "multip:disconnect_from_server"
+INTENT_DISCONNECT = "disconnect_from_server"
 
 INTENT_FILTER = [INTENT_DISCONNECT]
 
