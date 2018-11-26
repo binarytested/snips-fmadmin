@@ -9,6 +9,11 @@ from pyfmadmin import pyfmadmin
 
 CONFIG_INI = "config.ini"
 
+
+INTENT_DISCONNECT = "multip:disconnect_from_server"
+
+INTENT_FILTER = [INTENT_DISCONNECT]
+
 # If this skill is supposed to run on the satellite,
 # please get this mqtt connection info from <config.ini>
 # Hint: MQTT server is always running on the master device
@@ -44,12 +49,14 @@ class snips_fmadmin(object):
     # --> Sub callback function, one per intent
     def connect_to_server(self, hermes, intent_message):
 
+        hermes.publish_start_session_notification(intent_message.site_id, "Attempting connection to server...", "")
+        
         loginResponse = self.fa.login()
         
         if loginResponse["result"] == 0:
 	        print ( "Login successful!" )
-	        #hermes.publish_start_session_notification(intent_message.site_id, "Connected to server", "")
-	        hermes.publish_end_session(intent_message.session_id, "Connected to server")
+	        hermes.publish_continue_session(intent_message.session_id, "Connected to server. What would you like to do?", INTENT_FILTER)
+	        #hermes.publish_end_session(intent_message.session_id, "Connected to server")
         else:
 	        print ( "Login failed" )
 	        hermes.publish_end_session(intent_message.session_id, "Unable to connect to server")
@@ -63,13 +70,17 @@ class snips_fmadmin(object):
 
     def disconnect_from_server(self, hermes, intent_message):
         # terminate the session first if not continue
-        hermes.publish_end_session(intent_message.session_id, "")
-
-        # action code goes here...
-        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
+        
+        logoutResponse = self.fa.logout()
+        
+        if logoutResponse["result"] == 0:
+	        print ( "Logout successful!" )
+        else:
+	        print ( "Logout failed" )
 
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(intent_message.site_id, "Action2 has been done", "")
+        #hermes.publish_start_session_notification(intent_message.site_id, "Action2 has been done", "")
 
     # More callback function goes here...
 
@@ -83,7 +94,7 @@ class snips_fmadmin(object):
         coming_intent = self.getIntentName(intent_message)
         if coming_intent == 'connect_to_server':
             self.connect_to_server(hermes, intent_message)
-        if coming_intent == 'intent_2':
+        if coming_intent == 'disconnect_from_server':
             self.disconnect_from_server(hermes, intent_message)
 
         # more callback and if condition goes here...
