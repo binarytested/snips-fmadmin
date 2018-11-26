@@ -12,7 +12,10 @@ CONFIG_INI = "config.ini"
 INTENT_DISCONNECT = "multip:disconnect_from_server"
 INTENT_AMOUNT_USERS = "multip:amount_users_connected"
 
-INTENT_FILTER = [INTENT_DISCONNECT]
+INTENT_FILTER = [
+    INTENT_DISCONNECT,
+    INTENT_AMOUNT_USERS
+]
 
 # If this skill is supposed to run on the satellite,
 # please get this mqtt connection info from <config.ini>
