@@ -10,6 +10,7 @@ from pyfmadmin import pyfmadmin
 CONFIG_INI = "config.ini"
 
 INTENT_DISCONNECT = "multip:disconnect_from_server"
+INTENT_AMOUNT_USERS = "multip:amount_users_connected"
 
 INTENT_FILTER = [INTENT_DISCONNECT]
 
@@ -47,7 +48,7 @@ class snips_fmadmin(object):
     # --> Sub callback function, one per intent
     def connect_to_server(self, hermes, intent_message):
 
-        hermes.publish_start_session_notification(intent_message.site_id, "Attempting connection to server...", "")
+        #hermes.publish_start_session_notification(intent_message.site_id, "Attempting connection to server...", "")
         
         loginResponse = self.fa.login()
         
@@ -67,7 +68,6 @@ class snips_fmadmin(object):
 
 
     def disconnect_from_server(self, hermes, intent_message):
-        # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
         
         logoutResponse = self.fa.logout()
@@ -79,6 +79,27 @@ class snips_fmadmin(object):
 
         # if need to speak the execution result by tts
         #hermes.publish_start_session_notification(intent_message.site_id, "Action2 has been done", "")
+
+
+
+    def amount_users_connected(self, hermes, intent_message):
+        databaseDict = self.fa.list_databases()
+        
+        # get client dictionary
+        clientDict = databaseDict["clients"]["clients"]
+        
+        # count client items
+        clientCount = len(clientDict)
+        
+        if clientCount == 0:
+            sentence = "There are currently no users connected"
+        if clientCount == 1:
+            sentence = "There is currently only one user connected"
+        else:
+            sentence = "There are currently " + str(clientCount) + " users connected"
+        
+        hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+
 
     # More callback function goes here...
 
@@ -95,6 +116,8 @@ class snips_fmadmin(object):
             self.connect_to_server(hermes, intent_message)
         if coming_intent == 'disconnect_from_server':
             self.disconnect_from_server(hermes, intent_message)
+        if coming_intent == 'amount_users_connected':
+            self.amount_users_connected(hermes, intent_message)
 
         # more callback and if condition goes here...
 
