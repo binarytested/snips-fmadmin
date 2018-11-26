@@ -29,7 +29,7 @@ class snips_fmadmin(object):
         except :
             self.config = None
                 
-        fa = pyfmadmin (str(self.config["secret"]["hostname"]), str(self.config["secret"]["username"]), str(self.config["secret"]["password"]))
+        self.fa = pyfmadmin (str(self.config["secret"]["hostname"]), str(self.config["secret"]["username"]), str(self.config["secret"]["password"]))
 
         # start listening to MQTT
         self.start_blocking()
