@@ -31,6 +31,12 @@ MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 class snips_fmadmin(object):
 
 
+    context_client = {}
+    context_clients = []
+    context_database = {}
+    context_databases = []
+
+
     def __init__(self):
         # get the configuration if needed
         try:
@@ -118,7 +124,9 @@ class snips_fmadmin(object):
         
         for client in clientDict:
             if usernameFind.lower() in client["userName"].lower():
-                sentence = usernameFind + " seems to be connected as " + client["userName"]
+                self.context_client = client
+                fileCount = len(client["guestFiles"])
+                sentence = usernameFind + " seems to be connected as " + client["userName"] + ", and has " + str(fileCount) + "files open"
                 break
         else:
             sentence = usernameFind + " does not seem to be connected"
