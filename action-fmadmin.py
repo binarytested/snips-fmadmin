@@ -110,10 +110,10 @@ class snips_fmadmin(object):
     def find_connected_user(self, hermes, intent_message):
 
         #slotItems = intent_message.slots.items()
-        #username = intent_message.slots.items()
+        username = intent_message.slots[0]["person"]["raw_value"]
         
         #print("Username: " + str(username))
-        print("Items: " + intent_message.slots.items())
+        #print("Items: " + intent_message.slots.items())
         
         sentence = "Finding user"
         
