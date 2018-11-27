@@ -126,10 +126,15 @@ class snips_fmadmin(object):
             if usernameFind.lower() in client["userName"].lower():
                 self.context_client = client
                 fileCount = len(client["guestFiles"])
-                sentence = usernameFind + " seems to be connected as " + client["userName"] + ", and has " + str(fileCount) + "files open"
+                if fileCount == 1:
+                    fileOpenStr = " only one file open"
+                else:
+                    fileOpenStr = str(fileCount) + " files open"
+                    
+                sentence = "yes, " + usernameFind + " seems to be connected as " + client["userName"] + ", and has " + fileOpenStr
                 break
         else:
-            sentence = usernameFind + " does not seem to be connected"
+            sentence = "No, I don't see " + usernameFind + " at this time"
         
         
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
