@@ -117,8 +117,8 @@ class snips_fmadmin(object):
         
         
         for client in clientDict:
-            if client["userName"].lower() == usernameFind.lower():
-                sentence = usernameFind + " is connected"
+            if usernameFind.lower() in client["userName"].lower():
+                sentence = usernameFind + " seems to be connected as " + client["userName"]
                 break
         else:
             sentence = usernameFind + " does not seem to be connected"
