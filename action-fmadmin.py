@@ -11,10 +11,12 @@ CONFIG_INI = "config.ini"
 
 INTENT_DISCONNECT = "multip:disconnect_from_server"
 INTENT_AMOUNT_USERS = "multip:amount_users_connected"
+INTENT_FIND_USER = "multip:find_connected_user"
 
 INTENT_FILTER = [
     INTENT_DISCONNECT,
-    INTENT_AMOUNT_USERS
+    INTENT_AMOUNT_USERS,
+    INTENT_FIND_USER
 ]
 
 # If this skill is supposed to run on the satellite,
@@ -104,6 +106,21 @@ class snips_fmadmin(object):
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
 
+
+    def find_connected_user(self, hermes, intent_message):
+
+        username = intent_message.slots.items()[0]["rawValue"]
+        
+        print("Username: " + str(username))
+        print("Items: " + intent_message.slots.items())
+        
+        sentence = "Finding user"
+        
+        hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+
+
+
+
     # More callback function goes here...
 
 
@@ -121,6 +138,9 @@ class snips_fmadmin(object):
             self.disconnect_from_server(hermes, intent_message)
         if coming_intent == 'amount_users_connected':
             self.amount_users_connected(hermes, intent_message)
+        if coming_intent == 'find_connected_user':
+            self.find_connected_user(hermes, intent_message)
+
 
         # more callback and if condition goes here...
 
