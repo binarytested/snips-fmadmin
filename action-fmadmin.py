@@ -108,14 +108,21 @@ class snips_fmadmin(object):
 
 
     def find_connected_user(self, hermes, intent_message):
-
-        #slotItems = intent_message.slots.items()
-        username = intent_message.slots[0]["person"]["raw_value"]
+        databaseDict = self.fa.list_databases()
         
-        #print("Username: " + str(username))
-        #print("Items: " + intent_message.slots.items())
+        # get client dictionary
+        clientDict = databaseDict["clients"]["clients"]
         
-        sentence = "Finding user"
+        usernameFind = str(intent_message.slots["person"][0].raw_value)
+        
+        
+        for client in clientDict:
+            if client["userName"].lower() == usernameFind.lower():
+                sentence = usernameFind + " is connected"
+                break
+        else:
+            sentence = usernameFind + " does not seem to be connected"
+        
         
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
