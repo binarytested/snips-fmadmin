@@ -214,10 +214,10 @@ class snips_fmadmin(object):
             
         fileList = []
         for file in self.context_clients[0]["guestFiles"]:
-            fileList.append(file["filename"])
+            fileList.append(file["filename"].replace(".fmp12",""))
         #fileNames = ", ".join( self.context_clients[0]["guestFiles"][0]["filename"].values() )
         fileNames = ", ".join( fileList )
-        username = self.context_clients[0]["username"]
+        username = self.context_clients[0]["userName"]
         sentence = username + " is currently using the following files: " + fileNames
         
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
