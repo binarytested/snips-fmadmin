@@ -59,7 +59,30 @@ class snips_fmadmin(object):
         self.context_clients = {}
         self.context_databases = {}
         
+   
+   
+    def setClientContext(self, clientItem):
+        # clear current context
+        self.context_clients.clear()
+        
+        # set the current context depending on object type received
+        if type(clientItem) is list:
+            self.context_clients = clientItem
+        if type(clientItem) is dict:
+            self.context_clients.append(clientItem)
+
+
+    def setDatabaseContext(self, databaseItem):
+        # clear current context
+        self.context_databases.clear()
+        
+        # set the current context depending on object type received
+        if type(databaseItem) is list:
+            self.context_databases = databaseItem
+        if type(databaseItem) is dict:
+            self.context_databases.append(databaseItem)
             
+                        
         
     def getIntentName(self, intent_message):
         intentName = intent_message.intent.intent_name
@@ -122,7 +145,7 @@ class snips_fmadmin(object):
         clientDict = databaseDict["clients"]["clients"]
         
         # changing context
-        self.context_clients = clientDict
+        self.setClientContext(clientDict)
         
         # count client items
         clientCount = len(clientDict)
@@ -155,7 +178,7 @@ class snips_fmadmin(object):
                 # found the user
                 
                 # changing context
-                self.context_clients = client
+                self.setClientContext(client)
                 
                 fileCount = len(client["guestFiles"])
                 
