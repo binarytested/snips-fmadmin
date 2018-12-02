@@ -52,7 +52,15 @@ class pyfmadmin:
 		ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 		self.conn = httplib.HTTPSConnection(self.hostname, timeout=REQUEST_TIMEOUT)
 		self.conn._context = ctx
-		self.conn.request(method, url, body, headers)
+		responseDict = {}
+		
+		try:
+		    self.conn.request(method, url, body, headers)
+		except:
+			responseDict["result"] = -1
+			responseDict["description"] = "Unable to establish connection."	
+			return responseDict		    
+		
 		responseDict = {}
 		
 		response = self.conn.getresponse()
