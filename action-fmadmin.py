@@ -55,7 +55,7 @@ class snips_fmadmin(object):
         
         
         
-    def clearContext(self)
+    def clearContext(self):
         self.context_clients = {}
         self.context_databases = {}
         
@@ -178,17 +178,18 @@ class snips_fmadmin(object):
     # --> Sub callback function
     # --> Reads list of files user is using. Client context is single
     def files_user_is_using(self, hermes, intent_message):
+        print ("--> in the right callback function")
         # exit if context is inappropriate
-        if len(self.context_client) == 0:
+        if len(self.context_clienst) == 0:
             sentence = "Sorry. I'm not sure who you're talking about"
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
             return
-        if len(self.context_client) > 1:
+        if len(self.context_clients) > 1:
             sentence = "Sorry. There seems to be a misunderstanding regarding who we're talking about"
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
             return        
             
-        fileNames = ", ".join( self.context_client[0]["guestFiles"]["filename"].values() )
+        fileNames = ", ".join( self.context_clients[0]["guestFiles"]["filename"].values() )
         username = self.context_clients[0]["username"]
         sentence = username + " is currently using the following files: " + fileNames
         
