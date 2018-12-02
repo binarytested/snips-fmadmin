@@ -56,8 +56,8 @@ class snips_fmadmin(object):
         
         
     def clearContext(self):
-        self.context_clients = {}
-        self.context_databases = {}
+        self.context_clients = []
+        self.context_databases = []
         
    
    
