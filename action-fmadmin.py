@@ -13,13 +13,15 @@ INTENT_DISCONNECT = "multip:disconnect_from_server"
 INTENT_AMOUNT_USERS = "multip:amount_users_connected"
 INTENT_FIND_USER = "multip:find_connected_user"
 INTENT_FILES_USER_USING = "multip:files_user_is_using"
+INTENT_DISCONNECT_CURRENT_USER = "multip:disconnect_current_user"
 
 
 INTENT_FILTER = [
     INTENT_DISCONNECT,
     INTENT_AMOUNT_USERS,
     INTENT_FIND_USER,
-    INTENT_FILES_USER_USING
+    INTENT_FILES_USER_USING,
+    INTENT_DISCONNECT_CURRENT_USER
 ]
 
 # If this skill is supposed to run on the satellite,
@@ -58,7 +60,12 @@ class snips_fmadmin(object):
     def initContext(self):
         self.context_clients = []
         self.context_databases = []
+
         
+    def clearContext(self):
+        self.context_clients[:] = []
+        self.context_databases[:] = []
+
    
    
     def setClientContext(self, clientItem):
@@ -201,7 +208,6 @@ class snips_fmadmin(object):
     # --> Sub callback function
     # --> Reads list of files user is using. Client context is single
     def files_user_is_using(self, hermes, intent_message):
-        print ("--> in the right callback function")
         # exit if context is inappropriate
         if len(self.context_clients) == 0:
             sentence = "Sorry. I'm not sure who you're talking about"
@@ -225,6 +231,41 @@ class snips_fmadmin(object):
         
 
 
+    # --> Sub callback function
+    # --> Disconnects the current context user. Client context is single
+    def disconnect_current_user(self, hermes, intent_message):
+        # exit if context is inappropriate
+        if len(self.context_clients) == 0:
+            sentence = "Sorry. I'm not sure who you're talking about"
+            hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+            return
+        if len(self.context_clients) > 1:
+            sentence = "Sorry. There seems to be a misunderstanding regarding who we're talking about"
+            hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+            return          
+        
+        # user variable
+        client_id = self.context_clients[0]["id"]
+        username = self.context_clients[0]["userName"]   
+        
+        # set optional parameters
+        message = "Please close all files."
+        gracetime = 10
+        
+        disconnectResponse = self.fa.disconnect_client (client_id, message=message, gracetime=gracetime)
+        if disconnectResponse["result"] == 0:
+	        print ( "    --> success <--" )
+	        sentence = "Sent disconnect message to " + username
+        else:
+	        print ( "    --> fail <--" )
+	        sentence = "Disconnect was unsuccessful"
+	        
+	    
+	    hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+
+
+
+
     # More callback function goes here...
 
 
@@ -246,6 +287,10 @@ class snips_fmadmin(object):
             self.find_connected_user(hermes, intent_message)
         if coming_intent == 'files_user_is_using':
             self.files_user_is_using(hermes, intent_message)
+        if coming_intent == 'disconnect_current_user':
+            self.disconnect_current_user(hermes, intent_message)
+
+
 
 
         # more callback and if condition goes here...
