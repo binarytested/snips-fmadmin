@@ -12,11 +12,14 @@ CONFIG_INI = "config.ini"
 INTENT_DISCONNECT = "multip:disconnect_from_server"
 INTENT_AMOUNT_USERS = "multip:amount_users_connected"
 INTENT_FIND_USER = "multip:find_connected_user"
+INTENT_FILES_USER_USING = "multip:files_user_is_using"
+
 
 INTENT_FILTER = [
     INTENT_DISCONNECT,
     INTENT_AMOUNT_USERS,
-    INTENT_FIND_USER
+    INTENT_FIND_USER,
+    INTENT_FILES_USER_USING
 ]
 
 # If this skill is supposed to run on the satellite,
@@ -31,10 +34,7 @@ MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 class snips_fmadmin(object):
 
 
-    context_client = {}
-    context_clients = []
-    context_database = {}
-    context_databases = []
+
 
 
     def __init__(self):
@@ -45,18 +45,32 @@ class snips_fmadmin(object):
             self.config = None
                 
         self.fa = pyfmadmin (str(self.config["secret"]["hostname"]), str(self.config["secret"]["username"]), str(self.config["secret"]["password"]))
+        
+        # init context awareness variables
+        self.clearContext()
 
         # start listening to MQTT
         self.start_blocking()
         
         
-    def getIntentName (self, intent_message):
+        
+        
+    def clearContext(self)
+        self.context_clients = {}
+        self.context_databases = {}
+        
+            
+        
+    def getIntentName(self, intent_message):
         intentName = intent_message.intent.intent_name
         intentName = intentName.split(":")[1]
         return intentName
         
         
-    # --> Sub callback function, one per intent
+        
+        
+    # --> Sub callback function
+    # --> Log into server
     def connect_to_server(self, hermes, intent_message):
 
         #hermes.publish_start_session_notification(intent_message.site_id, "Attempting connection to server...", "")
@@ -77,10 +91,15 @@ class snips_fmadmin(object):
 
 
 
-
+    # --> Sub callback function
+    # --> Logout of server
     def disconnect_from_server(self, hermes, intent_message):
         hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
         
+        # clear context awareness variables
+        self.clearContext()
+                
+        # logout of FMS
         logoutResponse = self.fa.logout()
         
         if logoutResponse["result"] == 0:
@@ -93,11 +112,17 @@ class snips_fmadmin(object):
 
 
 
+
+    # --> Sub callback function
+    # --> Reads amount of users currently connected
     def amount_users_connected(self, hermes, intent_message):
         databaseDict = self.fa.list_databases()
         
         # get client dictionary
         clientDict = databaseDict["clients"]["clients"]
+        
+        # changing context
+        self.context_clients = clientDict
         
         # count client items
         clientCount = len(clientDict)
@@ -113,6 +138,9 @@ class snips_fmadmin(object):
 
 
 
+
+    # --> Sub callback function
+    # --> Determine if a particular user is connected
     def find_connected_user(self, hermes, intent_message):
         databaseDict = self.fa.list_databases()
         
@@ -124,8 +152,13 @@ class snips_fmadmin(object):
         
         for client in clientDict:
             if usernameFind.lower() in client["userName"].lower():
-                self.context_client = client
+                # found the user
+                
+                # changing context
+                self.context_clients = client
+                
                 fileCount = len(client["guestFiles"])
+                
                 if fileCount == 1:
                     fileOpenStr = " only one file open"
                 else:
@@ -134,12 +167,34 @@ class snips_fmadmin(object):
                 sentence = "yes, " + usernameFind + " seems to be connected as " + client["userName"] + ", and has " + fileOpenStr
                 break
         else:
+            # did not find the user
             sentence = "No, I don't see " + usernameFind + " at this time"
-        
-        
+            
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
 
+
+
+    # --> Sub callback function
+    # --> Reads list of files user is using. Client context is single
+    def files_user_is_using(self, hermes, intent_message):
+        # exit if context is inappropriate
+        if len(self.context_client) == 0:
+            sentence = "Sorry. I'm not sure who you're talking about"
+            hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+            return
+        if len(self.context_client) > 1:
+            sentence = "Sorry. There seems to be a misunderstanding regarding who we're talking about"
+            hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+            return        
+            
+        fileNames = ", ".join( self.context_client[0]["guestFiles"]["filename"].values() )
+        username = self.context_clients[0]["username"]
+        sentence = username + " is currently using the following files: " + fileNames
+        
+        hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+
+        
 
 
     # More callback function goes here...
@@ -161,6 +216,8 @@ class snips_fmadmin(object):
             self.amount_users_connected(hermes, intent_message)
         if coming_intent == 'find_connected_user':
             self.find_connected_user(hermes, intent_message)
+        if coming_intent == 'files_user_is_using':
+            self.files_user_is_using(hermes, intent_message)
 
 
         # more callback and if condition goes here...
