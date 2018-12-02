@@ -180,7 +180,7 @@ class snips_fmadmin(object):
     def files_user_is_using(self, hermes, intent_message):
         print ("--> in the right callback function")
         # exit if context is inappropriate
-        if len(self.context_clienst) == 0:
+        if len(self.context_clients) == 0:
             sentence = "Sorry. I'm not sure who you're talking about"
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
             return
