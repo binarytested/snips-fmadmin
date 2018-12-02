@@ -258,9 +258,9 @@ class snips_fmadmin(object):
 	        sentence = "Sent disconnect message to " + username
         else:
 	        print ( "    --> fail <--" )
-	        sentence = "Disconnect was unsuccessful"
-	        
-	    hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
+	        sentence = "I sent the disconnect notice"
+
+        hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
 
 
