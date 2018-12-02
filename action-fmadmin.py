@@ -260,7 +260,6 @@ class snips_fmadmin(object):
 	        print ( "    --> fail <--" )
 	        sentence = "Disconnect was unsuccessful"
 	        
-	    
 	    hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
 
