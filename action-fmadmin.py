@@ -47,7 +47,7 @@ class snips_fmadmin(object):
         self.fa = pyfmadmin (str(self.config["secret"]["hostname"]), str(self.config["secret"]["username"]), str(self.config["secret"]["password"]))
         
         # init context awareness variables
-        self.clearContext()
+        self.initContext()
 
         # start listening to MQTT
         self.start_blocking()
@@ -55,7 +55,7 @@ class snips_fmadmin(object):
         
         
         
-    def clearContext(self):
+    def initContext(self):
         self.context_clients = []
         self.context_databases = []
         
@@ -63,7 +63,7 @@ class snips_fmadmin(object):
    
     def setClientContext(self, clientItem):
         # clear current context
-        self.context_clients.clear()
+        self.context_clients[:] = []
         
         # set the current context depending on object type received
         if type(clientItem) is list:
@@ -74,7 +74,7 @@ class snips_fmadmin(object):
 
     def setDatabaseContext(self, databaseItem):
         # clear current context
-        self.context_databases.clear()
+        self.context_databases[:] = []
         
         # set the current context depending on object type received
         if type(databaseItem) is list:
