@@ -242,21 +242,22 @@ class snips_fmadmin(object):
         if len(self.context_clients) > 1:
             sentence = "Sorry. There seems to be a misunderstanding regarding who we're talking about"
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
-            return          
-        
-        # --> debug only <--
-        # remove the following 2 lines after testing
-        for (slot_value, slot) in intent_message.slots.items():
-            print('Slot {} -> \n\tRaw: {} \tValue: {}'.format(slot_value, slot[0].raw_value, slot[0].slot_value.value.value))
-        
+            return
+
+
         # user variable
         client_id = self.context_clients[0]["id"]
-        username = self.context_clients[0]["userName"]   
-        
+        username = self.context_clients[0]["userName"]
+
         # set optional parameters
         message = "Please close all files."
-        gracetime = 10
-        
+        #gracetime = 10
+        slot = intent_message.slots["gracetime"]
+        gracetime = slot[0].slot_value.value.seconds
+        gracetime = gracetime + (slot[0].slot_value.value.minutes * 60)
+        gracetime = gracetime + (slot[0].slot_value.value.hours * 3600)
+        print ( "    --> gracetime: " + str(gracetime) )
+
         disconnectResponse = self.fa.disconnect_client (client_id, message=message, gracetime=gracetime)
         if disconnectResponse["result"] == 0:
 	        #print ( "    --> success <--" )
