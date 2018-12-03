@@ -100,7 +100,7 @@ class snips_fmadmin(object):
         
         for database in self.context_databases:
             if database["status"] == "NORMAL":
-                closeResponse = fa.close_database (database["id"], message=message)
+                closeResponse = self.fa.close_database (database["id"], message=message)
                 if closeResponse["result"] == 0:
                     print ( "    --> success: " + database["filename"] + " closed" )
                 else:
