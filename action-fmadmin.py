@@ -204,8 +204,18 @@ class snips_fmadmin(object):
             if usernameFind.lower() in client["userName"].lower():
                 # found the user
                 
-                # changing context
+                # changing client context
                 self.setClientContext(client)
+                
+                fileIdList = []
+                for file in self.context_clients[0]["guestFiles"]:
+                    fileIdList.append(file["id"])
+
+                # change database context
+                databaseList = databaseDict["files"]["files"]
+                databaseList[:] = [database for database in databaseList if database["id"] in fileIdList]
+                self.context_databases = databaseList
+                print (databaseList)
                 
                 fileCount = len(client["guestFiles"])
                 
