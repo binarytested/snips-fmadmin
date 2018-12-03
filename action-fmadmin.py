@@ -107,8 +107,8 @@ class snips_fmadmin(object):
                     errorCount = errorCount + 1
 	                print ( "       " + closeResponse["description"] )
 	                print ( "    --> fail: " + database["filename"] )
-	    
-	    return errorCount
+
+        return errorCount
                         
         
     def getIntentName(self, intent_message):
