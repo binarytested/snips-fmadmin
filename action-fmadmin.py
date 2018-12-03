@@ -250,18 +250,18 @@ class snips_fmadmin(object):
         username = self.context_clients[0]["userName"]
 
         # set optional parameters
-        message = "Please close all files."
         #gracetime = 10
         slot = intent_message.slots["gracetime"]
         gracetime = slot[0].slot_value.value.seconds
         gracetime = gracetime + (slot[0].slot_value.value.minutes * 60)
         gracetime = gracetime + (slot[0].slot_value.value.hours * 3600)
-        print ( "    --> gracetime: " + str(gracetime) )
+        #print ( "    --> gracetime: " + str(gracetime) )
+        message = "Please close all files. You will be automatically disconnected in " + str(gracetime) + " seconds."
 
         disconnectResponse = self.fa.disconnect_client (client_id, message=message, gracetime=gracetime)
         if disconnectResponse["result"] == 0:
 	        #print ( "    --> success <--" )
-	        sentence = "I sent" + username + " the disconnect notice"
+	        sentence = "I sent " + username + " the disconnect notice"
         else:
 	        #print ( "    --> fail <--" )
 	        sentence = "There was an error sending the disconnect notice"
