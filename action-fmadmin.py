@@ -218,11 +218,20 @@ class snips_fmadmin(object):
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
             return        
             
-        fileList = []
+        fileNameList = []
+        fileIdList = []
         for file in self.context_clients[0]["guestFiles"]:
-            fileList.append(file["filename"].replace(".fmp12",""))
-        #fileNames = ", ".join( self.context_clients[0]["guestFiles"][0]["filename"].values() )
-        fileNames = ", ".join( fileList )
+            fileNameList.append(file["filename"].replace(".fmp12",""))
+            fileIdList.append(file["id"]) 
+        
+        # change context
+        databaseDict = self.fa.list_databases()
+        databaseDict[:] = [database for database in databaseDict if database["id"] not in fileIdList]
+        self.context_databases = databaseDict
+        print (databaseDict)
+
+
+        fileNames = ", ".join( fileNameList )
         username = self.context_clients[0]["userName"]
         sentence = username + " is currently using the following files: " + fileNames
         
