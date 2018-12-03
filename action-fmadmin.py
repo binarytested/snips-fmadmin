@@ -175,12 +175,12 @@ class snips_fmadmin(object):
         databaseDict = self.fa.list_databases()
         
         # get client dictionary
-        clientDict = databaseDict["clients"]["clients"]
+        clientList = databaseDict["clients"]["clients"]
         
         usernameFind = str(intent_message.slots["person"][0].raw_value)
         
         
-        for client in clientDict:
+        for client in clientList:
             if usernameFind.lower() in client["userName"].lower():
                 # found the user
                 
@@ -226,8 +226,9 @@ class snips_fmadmin(object):
         
         # change context
         databaseDict = self.fa.list_databases()
-        databaseDict[:] = [database for database in databaseDict if database["id"] not in fileIdList]
-        self.context_databases = databaseDict
+        databaseList = databaseDict["files"]["files"]
+        databaseList[:] = [database for database in databaseList if database["id"] not in fileIdList]
+        self.context_databases = databaseList
         print (databaseDict)
 
 
