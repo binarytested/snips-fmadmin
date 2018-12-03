@@ -15,7 +15,6 @@ INTENT_FIND_USER = "multip:find_connected_user"
 INTENT_FILES_USER_USING = "multip:files_user_is_using"
 INTENT_DISCONNECT_CURRENT_USER = "multip:disconnect_current_user"
 
-
 INTENT_FILTER = [
     INTENT_DISCONNECT,
     INTENT_AMOUNT_USERS,
