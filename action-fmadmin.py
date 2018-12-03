@@ -96,14 +96,19 @@ class snips_fmadmin(object):
         if len(self.context_databases) == 0:
             return
         
+        errorCount = 0
+        
         for database in self.context_databases:
             if database["status"] == "NORMAL":
                 closeResponse = fa.close_database (database["id"], message=message)
                 if closeResponse["result"] == 0:
 	                print ( "    --> success: " + database["filename"] + " closed" )
                 else:
+                    errorCount = errorCount + 1
 	                print ( "       " + closeResponse["description"] )
 	                print ( "    --> fail: " + database["filename"] )
+	    
+	    return errorCount
                         
         
     def getIntentName(self, intent_message):
@@ -300,7 +305,14 @@ class snips_fmadmin(object):
     # --> Close the current context database files. Database context is plural
     def close_current_databases(self, hermes, intent_message):
         message = "This file is being closed by the administrator."
-        self.closeDatabasesInContext(message)
+        errorCount = self.closeDatabasesInContext(message)
+        
+        if errorCount == 0:
+            sentence = "Files closed."
+        else:
+            sentence = "Was unable to close all files"
+
+        hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
     
     
 
