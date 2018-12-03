@@ -14,6 +14,7 @@ INTENT_AMOUNT_USERS = "multip:amount_users_connected"
 INTENT_FIND_USER = "multip:find_connected_user"
 INTENT_FILES_USER_USING = "multip:files_user_is_using"
 INTENT_DISCONNECT_CURRENT_USER = "multip:disconnect_current_user"
+INTENT_CLOSE_CURRENT_DATABASES = "multip:close_current_databases"
 
 
 INTENT_FILTER = [
@@ -89,6 +90,19 @@ class snips_fmadmin(object):
         if type(databaseItem) is dict:
             self.context_databases.append(databaseItem)
             
+ 
+    def closeDatabasesInContext(self, message=None):
+        if len(self.context_databases) == 0:
+            return
+        
+        for database in self.context_databases:
+            if database["status"] == "NORMAL":
+                closeResponse = fa.close_database (database["id"], message=message)
+                if closeResponse["result"] == 0:
+	                print ( "    --> success: " + database["filename"] + " closed" )
+                else:
+	                print ( "       " + closeResponse["description"] )
+	                print ( "    --> fail: " + database["filename"] )
                         
         
     def getIntentName(self, intent_message):
@@ -227,9 +241,9 @@ class snips_fmadmin(object):
         # change context
         databaseDict = self.fa.list_databases()
         databaseList = databaseDict["files"]["files"]
-        databaseList[:] = [database for database in databaseList if database["id"] not in fileIdList]
+        databaseList[:] = [database for database in databaseList if database["id"] in fileIdList]
         self.context_databases = databaseList
-        print (databaseDict)
+        print (databaseList)
 
 
         fileNames = ", ".join( fileNameList )
@@ -281,6 +295,16 @@ class snips_fmadmin(object):
 
 
 
+    # --> Sub callback function
+    # --> Close the current context database files. Database context is plural
+    def close_current_databases(self, hermes, intent_message):
+        message = "This file is being closed by the administrator."
+        self.closeDatabasesInContext(message)
+    
+    
+
+
+
     # More callback function goes here...
 
 
@@ -304,6 +328,9 @@ class snips_fmadmin(object):
             self.files_user_is_using(hermes, intent_message)
         if coming_intent == 'disconnect_current_user':
             self.disconnect_current_user(hermes, intent_message)
+        if coming_intent == 'close_current_databases':
+            self.close_current_databases(hermes, intent_message)
+
 
 
 
