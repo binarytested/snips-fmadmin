@@ -102,11 +102,11 @@ class snips_fmadmin(object):
             if database["status"] == "NORMAL":
                 closeResponse = fa.close_database (database["id"], message=message)
                 if closeResponse["result"] == 0:
-	                print ( "    --> success: " + database["filename"] + " closed" )
+                    print ( "    --> success: " + database["filename"] + " closed" )
                 else:
                     errorCount = errorCount + 1
-	                print ( "       " + closeResponse["description"] )
-	                print ( "    --> fail: " + database["filename"] )
+                    print ( "       " + closeResponse["description"] )
+                    print ( "    --> fail: " + database["filename"] )
 
         return errorCount
                         
