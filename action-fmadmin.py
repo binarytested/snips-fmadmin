@@ -15,6 +15,7 @@ INTENT_FIND_USER = "multip:find_connected_user"
 INTENT_FILES_USER_USING = "multip:files_user_is_using"
 INTENT_DISCONNECT_CURRENT_USER = "multip:disconnect_current_user"
 
+
 INTENT_FILTER = [
     INTENT_DISCONNECT,
     INTENT_AMOUNT_USERS,
@@ -243,6 +244,11 @@ class snips_fmadmin(object):
             hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
             return          
         
+        # --> debug only <--
+        # remove the following 2 lines after testing
+        for (slot_value, slot) in intent_message.slots.items():
+            print('Slot {} -> \n\tRaw: {} \tValue: {}'.format(slot_value, slot[0].raw_value, slot[0].slot_value.value.value))
+        
         # user variable
         client_id = self.context_clients[0]["id"]
         username = self.context_clients[0]["userName"]   
@@ -253,11 +259,11 @@ class snips_fmadmin(object):
         
         disconnectResponse = self.fa.disconnect_client (client_id, message=message, gracetime=gracetime)
         if disconnectResponse["result"] == 0:
-	        print ( "    --> success <--" )
-	        sentence = "Sent disconnect message to " + username
+	        #print ( "    --> success <--" )
+	        sentence = "I sent" + username + " the disconnect notice"
         else:
-	        print ( "    --> fail <--" )
-	        sentence = "I sent the disconnect notice"
+	        #print ( "    --> fail <--" )
+	        sentence = "There was an error sending the disconnect notice"
 
         hermes.publish_continue_session(intent_message.session_id, sentence, INTENT_FILTER)
 
