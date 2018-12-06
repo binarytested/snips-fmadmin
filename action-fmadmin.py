@@ -144,7 +144,7 @@ class snips_fmadmin(object):
     # --> Sub callback function
     # --> Logout of server
     def disconnect_from_server(self, hermes, intent_message):
-        hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
+        #hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
         
         # clear context awareness variables
         self.clearContext()
@@ -157,6 +157,7 @@ class snips_fmadmin(object):
         else:
 	        print ( "Logout failed" )
 
+        hermes.publish_end_session(intent_message.session_id, "Disconnecting from server")
         # if need to speak the execution result by tts
         #hermes.publish_start_session_notification(intent_message.site_id, "Action2 has been done", "")
 
