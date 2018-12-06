@@ -129,7 +129,6 @@ class snips_fmadmin(object):
         
         if loginResponse["result"] == 0:
 	        print ( "Login successful!" )
-		hermes.subscribe_intents(self.master_intent_callback)
 	        hermes.publish_continue_session(intent_message.session_id, "Connected to server. What would you like to do?", INTENT_FILTER)
 	        #hermes.publish_end_session(intent_message.session_id, "Connected to server")
         else:
@@ -365,8 +364,7 @@ class snips_fmadmin(object):
     # --> Register callback function and start MQTT
     def start_blocking(self):
         with Hermes(MQTT_ADDR) as h:
-            #h.subscribe_intents(self.master_intent_callback).start()
-	    h.subscribe_intent("multip:connect_to_server", self.master_intent_callback).start()
+            h.subscribe_intents(self.master_intent_callback).start()
 
 if __name__ == "__main__":
     snips_fmadmin()
