@@ -364,7 +364,8 @@ class snips_fmadmin(object):
     # --> Register callback function and start MQTT
     def start_blocking(self):
         with Hermes(MQTT_ADDR) as h:
-            h.subscribe_intents(self.master_intent_callback).start()
+            #h.subscribe_intents(self.master_intent_callback).start()
+	    h.subscribe_intent("multip:connect_to_server", self.master_intent_callback).start()
 
 if __name__ == "__main__":
     snips_fmadmin()
